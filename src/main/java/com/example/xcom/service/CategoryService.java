@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -60,4 +61,7 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
+    public Optional<Category> readCategory(Long categoryId) {
+        return categoryRepository.findById(categoryId);
+    }
 }
