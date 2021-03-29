@@ -10,3 +10,16 @@ To check the API endpoints, use this [Swagger API](http://localhost:8080/swagger
 
 To run this project, clone this repository. Make sure you have MySQL installed in your system. Create a database named "xcom". 
 Also for this project, the database username is root (without password) . Make sure that you change the credentials according to your system.
+
+Project Milestones (Build both user and admin routes):
+- [x] Add Category and Products
+- [x] Add JWT Authentication
+- [ ] Add Role-Based Authentication
+- [ ] Add User Profile
+- [ ] Add Image Upload 
+- [ ] Add Wishlist
+- [ ] Add Cart
+- [ ] Add Checkout
+- [ ] Add Payment Gateway Integration
+- [ ] Write tests
+
