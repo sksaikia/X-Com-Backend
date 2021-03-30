@@ -1,11 +1,9 @@
 package com.example.xcom.controller;
 
 import com.example.xcom.authentication.JwtUtil;
-import com.example.xcom.authentication.requests.AuthenticationRequest;
-import com.example.xcom.authentication.requests.AuthenticationResponse;
-import com.example.xcom.authentication.requests.LoginRequest;
-import com.example.xcom.authentication.requests.SignUpRequest;
+import com.example.xcom.authentication.requests.*;
 import com.example.xcom.common.ApiResponse;
+import com.example.xcom.model.Role;
 import com.example.xcom.model.User;
 import com.example.xcom.repository.JwtUserRepository;
 import com.example.xcom.service.MyUserDetailsService;
@@ -42,24 +40,24 @@ public class AuthController {
     PasswordEncoder passwordEncoder;
 
 
-    @RequestMapping("/hello")
+    @GetMapping("/hello")
     public String hello(){
-        return  "Nil here";
+        return  "Sourav here";
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-        Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-        );
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
-
-    }
+//    @PostMapping("/authenticate")
+//    public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
+//        Authentication authenticate = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+//        );
+//
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+//
+//        final String jwt = jwtUtil.generateToken(userDetails);
+//
+//        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+//
+//    }
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 
@@ -90,24 +88,28 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
-
+        User user =  userRepository.findUserByEmail(userDetails.getUsername());
+        long id = user.getUserId();
+        System.out.println("ID ::::::::::::: " + id);
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        return ResponseEntity.ok(new AuthenticationResponse(jwt,id));
     }
 
     //TODO need to improve this method. Should be able to throw the exceptions
     @GetMapping("/checkUser")
-    public ResponseEntity<ApiResponse> checkUser() throws ExpiredJwtException {
+    public ResponseEntity<UserResponse> checkUser() throws ExpiredJwtException {
         String s = "";
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String currentPrincipalName = authentication.getName();
-            return new ResponseEntity<ApiResponse>(new ApiResponse(true,currentPrincipalName),HttpStatus.OK);
+            String email = authentication.getName();
+            User user = userRepository.findByEmail(email);
+            long id = user.getUserId();
+            return new ResponseEntity<UserResponse>(new UserResponse(email,id,true),HttpStatus.OK);
         }catch (ExpiredJwtException e){
             s = e.getMessage();
         }
-        return new ResponseEntity<ApiResponse>(new ApiResponse(false,s),HttpStatus.FORBIDDEN);
+        return new ResponseEntity<UserResponse>(new UserResponse("", 222L,false),HttpStatus.OK);
 
     }
 
