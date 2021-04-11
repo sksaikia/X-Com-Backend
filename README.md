@@ -17,8 +17,8 @@ Project Milestones (Build both user and admin routes):
 - [ ] Add Role-Based Authentication
 - [ ] Add User Profile
 - [ ] Add Image Upload 
-- [ ] Add Wishlist
-- [ ] Add Cart
+- [x] Add Wishlist
+- [x] Add Cart
 - [ ] Add Checkout
 - [ ] Add Payment Gateway Integration
 - [ ] Write tests
