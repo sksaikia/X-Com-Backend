@@ -65,6 +65,15 @@ public class ProductService {
         }
     }
 
+    public Product getProductById(Long productId) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (!optionalProduct.isPresent()){
+            //TODO throw exceptions
+        }
+        return optionalProduct.get();
+    }
+
+
 }
 
 

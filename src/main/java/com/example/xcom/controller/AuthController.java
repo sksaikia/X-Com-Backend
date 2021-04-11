@@ -114,4 +114,19 @@ public class AuthController {
     }
 
 
+    @GetMapping("/getUser")
+    public ResponseEntity<ApiResponse> getUser() throws ExpiredJwtException{
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            User user = userRepository.findByEmail(email);
+            long id = user.getUserId();
+            return new ResponseEntity<ApiResponse>(new ApiResponse(true,String.valueOf(id)),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false,e.getMessage()),HttpStatus.FORBIDDEN);
+        }
+
+    }
+
+
 }
