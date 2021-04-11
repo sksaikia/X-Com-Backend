@@ -6,10 +6,13 @@ import com.example.xcom.dto.cart.AddToCartDto;
 import com.example.xcom.dto.cart.CartDto;
 import com.example.xcom.dto.cart.CartItemDto;
 import com.example.xcom.exceptions.AuthenticationFailException;
+import com.example.xcom.exceptions.CartItemNotExistException;
+import com.example.xcom.exceptions.ProductNotExistException;
 import com.example.xcom.model.Cart;
 import com.example.xcom.model.Product;
 import com.example.xcom.repository.CartRepository;
 import com.example.xcom.repository.ProductRepository;
+import com.example.xcom.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,20 +71,27 @@ public class CartService {
     }
 
 
-    public void updateCartItem(long cartID,int quantity){
+    public void updateCartItem(long cartID,int quantity,long userId) throws CartItemNotExistException,AuthenticationFailException {
         Optional<Cart> optionalCart = cartRepository.findById(cartID);
         if (optionalCart.isPresent()) {
             Cart cart = optionalCart.get();
+
+            long originalUserId = cart.getUserId();
+            if (userId!=originalUserId){
+                throw new AuthenticationFailException(Constants.NOT_AUTHORIZED);
+            }
+
             cart.setQuantity(quantity);
             cart.setUpdatedDate(new Date());
             cartRepository.save(cart);
+        }else{
+            throw new CartItemNotExistException(Constants.CART_ITEM_NOT_EXIST);
         }
     }
 
-    public void deleteCartItem(long id,long userId) throws AuthenticationFailException {
+    public void deleteCartItem(long id,long userId) throws AuthenticationFailException,CartItemNotExistException {
         if (!cartRepository.existsById(id)){
-            //TODO return something . Add an exception
-            return ;
+            throw new CartItemNotExistException(Constants.CART_ITEM_NOT_EXIST);
         }
         Optional<Cart> optionalCart = cartRepository.findById(id);
         if (optionalCart.isPresent()){
@@ -89,7 +99,7 @@ public class CartService {
             Cart cart = optionalCart.get();
             long originalUserId = cart.getUserId();
             if (userId!=originalUserId){
-                throw new AuthenticationFailException("You are not authorized to delete this item");
+                throw new AuthenticationFailException(Constants.NOT_AUTHORIZED);
             }
 
         }
