@@ -38,9 +38,13 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    private Product getProductFromDTO(ProductDTO productDTO,Category category) {
+    public  Product getProductFromDTO(ProductDTO productDTO,Category category) {
         Product product = new Product(productDTO,category);
         return product;
+    }
+    public static ProductDTO getDtoFromProduct(Product product) {
+        ProductDTO productDto = new ProductDTO(product);
+        return productDto;
     }
 
     public void deleteProduct(long id){
